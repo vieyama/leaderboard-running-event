@@ -13,13 +13,25 @@ class EventRegisterController extends Controller
 {
     public function eventList(Request $request)
     {
+        $search = $request->query('search') ?? '';
+        $gender = $request->query('gender') ?? '';
         // Fetch events with active status
-        $events = Events::where('status', 'active')->get();
+        $events = Events::where('status', 1)->get();
 
-        // Iterate through events and include paginated eventRegister data
-        $events->each(function ($event) use ($request) {
+        $events->each(function ($event) use ($request, $search, $gender) {
             $event->eventRegister = $event->eventRegister()
                 ->with('user') // Eager load the 'user' relationship
+                ->when(($search || $gender), function ($query) use ($search, $gender) {
+                    $query->whereHas('user', function ($userQuery) use ($search, $gender) {
+                        if ($search) {
+                            $userQuery->where('name', 'LIKE', "%{$search}%");
+                        }
+                        if ($gender) {
+                            $userQuery->where('gender', $gender);
+                        }
+                    });
+                })
+                ->orderBy('total_distance', 'DESC')
                 ->paginate(10, ['*'], 'page', $request->input('page', 1));
         });
 
@@ -31,7 +43,7 @@ class EventRegisterController extends Controller
 
     public function leaderboard()
     {
-        $eventRegister = EventRegisters::with('activity')->with('user')->orderBy('total_distance', 'desc')->paginate(25);
+        $eventRegister = EventRegisters::with('activity')->with('user')->orderBy('total_distance', 'DESC')->paginate(25);
         return response()->json([
             'success' => true,
             'data' => $eventRegister,

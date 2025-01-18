@@ -1,9 +1,13 @@
 import { Button } from '@/components/ui/button';
+import { Form, FormControl, FormField, FormItem, FormMessage } from '@/Components/ui/form';
+import { Input } from '@/Components/ui/input';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/Components/ui/table';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/Components/ui/tabs';
 import Guest from '@/Layouts/GuestLayout';
 import { User } from '@/lib/mock-api';
 import { Head, Link, router, usePage } from '@inertiajs/react';
+import { useForm } from "react-hook-form"
+import { useState } from 'react';
 
 export interface FakeUsersProps {
     success: boolean;
@@ -43,7 +47,28 @@ interface EventRegisterProps {
 
 export default function Welcome() {
     const eventList = usePage().props?.eventList as EventsProps[]
-    console.log(eventList);
+    const [gender, setGender] = useState('all')
+    const form = useForm({
+        defaultValues: {
+            search: "",
+        },
+    })
+
+    function onSearch(data: { search: string }) {
+        setGender('all')
+        router.get('/', { ...(data.search && { search: data.search }) }, { preserveScroll: true, preserveState: true })
+    }
+
+    function handleSelectGender(event: { target: { value: string } }) {
+        const selectedGender = event.target.value
+        if (selectedGender === 'all') {
+            router.get('/', {}, { preserveScroll: true, preserveState: true })
+        } else {
+            router.get('/', { gender: selectedGender }, { preserveScroll: true, preserveState: true })
+        }
+        setGender(selectedGender)
+        form.reset()
+    }
 
     return (
         <Guest>
@@ -88,11 +113,37 @@ export default function Welcome() {
             <section>
                 <div className="max-w-6xl px-4 mx-auto sm:px-6">
                     <Tabs defaultValue="1">
-                        <TabsList>
-                            {eventList.map(item => (
-                                <TabsTrigger key={item.id} value={item.id.toString()}>{item.event_name}</TabsTrigger>
-                            ))}
-                        </TabsList>
+                        <div className='overflow-x-auto max-w-96 xs:max-w-full'>
+                            <TabsList className='justify-start xs:justify-center'>
+                                {eventList.map(item => (
+                                    <TabsTrigger key={item.id} value={item.id.toString()}>{item.event_name}</TabsTrigger>
+                                ))}
+                            </TabsList>
+                        </div>
+                        <div className='flex items-center justify-between gap-2'>
+                            <Form {...form}>
+                                <form onSubmit={form.handleSubmit(onSearch)} className="flex gap-3 my-5">
+                                    <FormField
+                                        control={form.control}
+                                        name="search"
+                                        render={({ field }) => (
+                                            <FormItem>
+                                                <FormControl>
+                                                    <Input placeholder="Search name..." className='md:w-72' {...field} />
+                                                </FormControl>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )}
+                                    />
+                                    <Button type="submit">Submit</Button>
+                                </form>
+                            </Form>
+                            <select value={gender} onChange={handleSelectGender} className='text-sm text-gray-900 border border-gray-300 rounded-lg'>
+                                <option value="all">All</option>
+                                <option value="male">Male</option>
+                                <option value="female">Female</option>
+                            </select>
+                        </div>
                         {eventList.map(item => {
                             return (
                                 <TabsContent key={item.id} value={item.id.toString()}>
@@ -100,7 +151,7 @@ export default function Welcome() {
                                         <Table>
                                             <TableHeader>
                                                 <TableRow>
-                                                    <TableHead className="w-[100px]">BIB</TableHead>
+                                                    <TableHead className="w-[200px]">BIB</TableHead>
                                                     <TableHead>Name</TableHead>
                                                     <TableHead>Gender</TableHead>
                                                     <TableHead className="text-right">Total Distances</TableHead>
@@ -113,8 +164,8 @@ export default function Welcome() {
                                                     <TableRow key={leaderboard?.id}>
                                                         <TableCell className="font-medium">{leaderboard?.bib}</TableCell>
                                                         <TableCell className="font-medium">{leaderboard?.user?.name}</TableCell>
-                                                        <TableCell>{leaderboard?.user?.gender}</TableCell>
-                                                        <TableCell className="text-right">{leaderboard?.total_distance}KM</TableCell>
+                                                        <TableCell className='capitalize'>{leaderboard?.user?.gender}</TableCell>
+                                                        <TableCell className="text-right">{parseInt(leaderboard?.total_distance, 10)} KM</TableCell>
                                                         <TableCell className="text-right">{leaderboard?.total_duration}</TableCell>
                                                         <TableCell className="text-right">{leaderboard?.total_pace}</TableCell>
                                                     </TableRow>

@@ -1,6 +1,8 @@
-import { Link } from '@inertiajs/react';
+import { Link, usePage } from '@inertiajs/react';
 
 const Header = () => {
+    const auth = usePage().props?.auth
+
     return (
         <header className="fixed z-30 w-full top-2 md:top-6">
             <div className="max-w-6xl px-4 mx-auto sm:px-6">
@@ -19,7 +21,7 @@ const Header = () => {
                                 href="/login"
                                 className="p-2 text-sm font-medium text-gray-800 bg-white rounded-lg shadow hover:bg-gray-50"
                             >
-                                Login
+                                {auth.user ? 'Dashboard' : 'Login'}
                             </Link>
                         </li>
                         <li key="2">

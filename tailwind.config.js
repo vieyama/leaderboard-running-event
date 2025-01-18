@@ -15,6 +15,7 @@ export default {
         extend: {
             screens: {
                 'h-800': { raw: '(min-height: 800px)' }, // Custom screen based on height
+                'xs': '430px'
             },
             fontFamily: {
                 sans: [

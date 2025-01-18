@@ -9,10 +9,12 @@ import relativeTime from 'dayjs/plugin/relativeTime';
 import duration from 'dayjs/plugin/duration';
 import { Button } from "@/components/ui/button";
 import { ActivityProps } from "../DetailEvent";
-import { Link } from "@inertiajs/react";
+import { ModalDeleteActivity } from "./ModalDeleteActivity";
+import { useState } from "react";
 
 dayjs.extend(duration);
 dayjs.extend(relativeTime);
+
 export function PopoverDetailActivity({ activity }: { activity: ActivityProps }) {
     const duration = dayjs.duration(activity?.pace, 'seconds');
     const minutes = duration.minutes(); // Get minutes
@@ -29,16 +31,19 @@ export function PopoverDetailActivity({ activity }: { activity: ActivityProps })
                         {dayjs(activity.created_at).fromNow()}
                     </p>
                 </Button>
-
             </PopoverTrigger>
             <PopoverContent className="w-96" side="right">
                 <div className="grid gap-4">
-                    <div className="space-y-2">
-                        <h4 className="font-medium leading-none">{activity?.activity_name}</h4>
-                        <p className="text-sm text-muted-foreground">
-                            {dayjs(activity.created_at).format('DD MMMM YYYY H:m')} WIB
-                        </p>
+                    <div className="flex justify-between">
+                        <div className="space-y-2">
+                            <h4 className="font-medium leading-none">{activity?.activity_name}</h4>
+                            <p className="text-sm text-muted-foreground">
+                                {dayjs(activity.created_at).format('DD MMMM YYYY H:m')} WIB
+                            </p>
+                        </div>
+                        <ModalDeleteActivity activity_name={activity.activity_name} id={activity.id} />
                     </div>
+
                     <div className="grid gap-2">
                         <div className="grid items-center grid-cols-3 gap-4">
                             <Label htmlFor="width">Distance</Label>

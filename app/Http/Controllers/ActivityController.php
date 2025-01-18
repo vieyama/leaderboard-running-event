@@ -25,7 +25,7 @@ class ActivityController extends Controller
         Activities::create([
             'user_id' => $userId,
             'activity_name' => $request->activity_name,
-            'strava_url' => $request->description,
+            'strava_url' => $request->description ?? '-',
             'distance' => $request->distance,
             'duration' => $request->duration,
             'pace' => $request->pace,

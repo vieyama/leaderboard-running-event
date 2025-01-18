@@ -30,7 +30,7 @@ const Footer = () => {
                           </Link>
                       </div>
                       <div className="text-sm text-gray-600">
-                          &copy; Cruip.com - All rights reserved.
+                          &copy; S2P - All rights reserved.
                       </div>
                   </div>
 

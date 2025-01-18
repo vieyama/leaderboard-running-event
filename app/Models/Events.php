@@ -13,7 +13,7 @@ class Events extends Model
     protected $fillable = [
         'event_name',
         'description',
-        'status'
+        'status' => 'boolean'
     ];
 
     public function eventRegister(): HasMany

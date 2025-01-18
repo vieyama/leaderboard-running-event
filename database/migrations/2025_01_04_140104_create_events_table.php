@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('event_name');
             $table->string('description');
-            $table->string('status')->default('archive');
+            $table->boolean('status')->default(true);
             $table->timestamps();
         });
     }

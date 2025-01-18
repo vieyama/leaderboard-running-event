@@ -11,7 +11,7 @@ import { Button } from "@/components/ui/button"
 
 const FormSchema = z.object({
     activity_name: z.string().min(5, "Activity name must be at least 5 characters"),
-    description: z.string().min(5, "Activity name must be at least 5 characters"),
+    description: z.string().nullable(),
     distance: z.number().positive("Distance must be a positive number"),
     duration: z.string().regex(/^\d{2}:\d{2}:\d{2}$/, 'Please enter a valid duration (HH:MM:SS)'),
     pace: z.string().regex(/^\d{2}:\d{2}$/, 'Please enter a valid pace (e.g., 03:50)')
@@ -54,21 +54,12 @@ export function ModalActivity({ eventRegisterId }: { eventRegisterId: number }) 
             eventRegisterId
         },
             {
-                onSuccess: (res) => {
-                    console.log(res);
+                onSuccess: () => {
                     setOpen(false);
                     form.reset();
                     toast({
-                        title: "You submitted the following values:",
-                        description: (
-                            <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
-                                <code className="text-white">{JSON.stringify({
-                                    ...data,
-                                    durationInSeconds,
-                                    paceInSeconds
-                                }, null, 2)}</code>
-                            </pre>
-                        ),
+                        title: "Activity created",
+                        description: "The activity was successfully recorded.",
                     })
                 }
             });
@@ -133,10 +124,7 @@ export function ModalActivity({ eventRegisterId }: { eventRegisterId: number }) 
                                             type="time"
                                             step="1"
                                             placeholder="00:03:20"
-                                            onChange={e => {
-                                                console.log(e.target.value);
-                                                return field.onChange(e.target.value)
-                                            }}
+                                            onChange={e => field.onChange(e.target.value)}
                                             value={field.value}
                                         />
                                     </FormControl>
@@ -175,7 +163,7 @@ export function ModalActivity({ eventRegisterId }: { eventRegisterId: number }) 
                                             type="url"
                                             placeholder="Strava Url"
                                             onChange={e => field.onChange(e.target.value)}
-                                            value={field.value}
+                                            value={field.value ?? ''}
                                         />
                                     </FormControl>
                                     <FormMessage />
