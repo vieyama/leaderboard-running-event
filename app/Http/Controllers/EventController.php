@@ -66,7 +66,7 @@ class EventController extends Controller
 
         $eventRegister = EventRegisters::with(['activity' => function ($query) {
             $query->orderBy('created_at', 'desc');
-        }])
+        }, 'user'])
             ->where('user_id', $userId)
             ->where('event_id', $eventId)
             ->first();

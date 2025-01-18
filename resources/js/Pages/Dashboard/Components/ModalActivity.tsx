@@ -8,6 +8,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { router, usePage } from "@inertiajs/react"
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
+import { Plus } from "lucide-react"
 
 const FormSchema = z.object({
     activity_name: z.string().min(5, "Activity name must be at least 5 characters"),
@@ -68,7 +69,10 @@ export function ModalActivity({ eventRegisterId }: { eventRegisterId: number }) 
     return (
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
-                <Button>Add Activity</Button>
+                <Button className="flex items-center gap-2">
+                    <Plus className="w-4 h-4" />
+                    Add Activity
+                </Button>
             </DialogTrigger>
             <DialogContent className="sm:max-w-[600px]">
                 <DialogHeader>
@@ -161,7 +165,7 @@ export function ModalActivity({ eventRegisterId }: { eventRegisterId: number }) 
                                     <FormControl>
                                         <Input
                                             type="url"
-                                            placeholder="Strava Url"
+                                            placeholder="https://strava.com/activities/..."
                                             onChange={e => field.onChange(e.target.value)}
                                             value={field.value ?? ''}
                                         />

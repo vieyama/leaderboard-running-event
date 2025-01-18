@@ -54,7 +54,7 @@ class DashboardController extends Controller
         $user = Auth::user();
         $eventRegister = EventRegisters::with(['activity' => function ($query) {
             $query->orderBy('created_at', 'desc');
-        }])
+        }, 'user'])
         ->where('user_id', $user->id)
         ->where('event_id', $eventId)
         ->first();

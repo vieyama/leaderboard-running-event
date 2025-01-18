@@ -68,11 +68,7 @@ class EventRegisterController extends Controller
                 'total_pace' => 0
             ]);
         }
-
-        return Inertia::render('Dashboard/DetailEvent', [
-            'eventRegister' => $eventRegister,
-            'event' => $eventRegister->event
-        ]);
+        return redirect()->route('detail-event', ['id' => $eventId]);
     }
 }
 
