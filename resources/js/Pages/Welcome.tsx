@@ -8,6 +8,8 @@ import { User } from '@/lib/mock-api';
 import { Head, Link, router, usePage } from '@inertiajs/react';
 import { useForm } from "react-hook-form"
 import { useState } from 'react';
+import { Inbox } from 'lucide-react';
+import { EmptyTable } from '@/Components/ui/empty-table';
 
 export interface FakeUsersProps {
     success: boolean;
@@ -113,13 +115,21 @@ export default function Welcome() {
             <section>
                 <div className="max-w-6xl px-4 mx-auto sm:px-6">
                     <Tabs defaultValue="1">
-                        <div className='overflow-x-auto max-w-96 xs:max-w-full'>
+                        {eventList.length ? <div className='overflow-x-auto max-w-96 xs:max-w-full'>
                             <TabsList className='justify-start xs:justify-center'>
                                 {eventList.map(item => (
                                     <TabsTrigger key={item.id} value={item.id.toString()}>{item.event_name}</TabsTrigger>
                                 ))}
                             </TabsList>
+                        </div> : <div className="flex flex-col items-center justify-center">
+                            <h3 className="mt-4 text-lg font-semibold">No Running Events Available</h3>
+                            <p className="max-w-sm mt-2 mb-4 text-sm text-center text-muted-foreground">
+                                No running events have been scheduled yet.
+                            </p>
                         </div>
+                        }
+
+
                         <div className='flex items-center justify-between gap-2'>
                             <Form {...form}>
                                 <form onSubmit={form.handleSubmit(onSearch)} className="flex gap-3 my-5">
@@ -144,7 +154,7 @@ export default function Welcome() {
                                 <option value="female">Female</option>
                             </select>
                         </div>
-                        {eventList.map(item => {
+                        {eventList.length ? eventList.map(item => {
                             return (
                                 <TabsContent key={item.id} value={item.id.toString()}>
                                     <div className="space-y-4">
@@ -160,7 +170,7 @@ export default function Welcome() {
                                                 </TableRow>
                                             </TableHeader>
                                             <TableBody>
-                                                {item?.eventRegister?.data?.map((leaderboard) => (
+                                                {item?.eventRegister?.data.length ? item?.eventRegister?.data?.map((leaderboard) => (
                                                     <TableRow key={leaderboard?.id}>
                                                         <TableCell className="font-medium">{leaderboard?.bib}</TableCell>
                                                         <TableCell className="font-medium">{leaderboard?.user?.name}</TableCell>
@@ -169,7 +179,12 @@ export default function Welcome() {
                                                         <TableCell className="text-right">{leaderboard?.total_duration}</TableCell>
                                                         <TableCell className="text-right">{leaderboard?.total_pace}</TableCell>
                                                     </TableRow>
-                                                ))}
+                                                )) : <EmptyTable
+                                                    colSpan={6}
+                                                    title="Leaderboard Currently Empty"
+                                                    description=" No participants have registered for this event yet. Check back later or create a new entry to see the leaderboard in action!"
+                                                />
+                                                }
                                             </TableBody>
                                         </Table>
                                         <div className="flex items-center justify-end w-full py-4 space-x-2">
@@ -195,7 +210,16 @@ export default function Welcome() {
                                     </div>
                                 </TabsContent>
                             )
-                        })}
+                        }) :
+                            <div className="flex flex-col items-center justify-center">
+                                <div className="flex items-center justify-center w-12 h-12 rounded-full bg-muted">
+                                    <Inbox className="w-6 h-6 text-muted-foreground" />
+                                </div>
+                                <h3 className="mt-4 text-lg font-semibold">Leaderboard Currently Empty</h3>
+                                <p className="max-w-sm mt-2 mb-4 text-sm text-center text-muted-foreground">
+                                    No participants have registered for this event yet. Check back later or create a new entry to see the leaderboard in action!
+                                </p>
+                            </div>}
                     </Tabs>
                 </div>
             </section>
