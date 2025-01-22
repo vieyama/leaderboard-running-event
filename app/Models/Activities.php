@@ -16,7 +16,8 @@ class Activities extends Model
         'distance',
         'duration',
         'pace',
-        'strava_url'
+        'strava_url',
+        'date'
     ];
 
     public function event(): BelongsTo

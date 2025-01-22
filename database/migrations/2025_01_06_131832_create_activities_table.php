@@ -19,6 +19,7 @@ return new class extends Migration
             $table->integer('duration'); // Duration in total seconds
             $table->integer('pace'); // Pace in total seconds per kilometer
             $table->string('strava_url');
+            $table->date('date');
             $table->timestamps();
 
             $table->foreign('event_register_id')->references('id')->on('event_registers')->cascadeOnDelete();

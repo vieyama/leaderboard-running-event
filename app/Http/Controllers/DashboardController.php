@@ -64,12 +64,4 @@ class DashboardController extends Controller
             'event' => $eventRegister->event
         ]);
     }
-
-    public function destroyActivity($id): RedirectResponse
-    {
-        $activity = Activities::find($id);
-        $activity->delete();
-
-        return redirect()->back()->with('success', 'Data deleted.');
-    }
 }

@@ -6,7 +6,7 @@ import { ScrollArea } from '@/Components/ui/scroll-area';
 import { ModalDeleteActivity } from './Components/ModalDeleteActivity';
 import { ModalActivity } from './Components/ModalActivity';
 
-export type ActivityProps = { id: number, activity_name: string, strava_url: string, created_at: string, distance: number, duration: number, pace: number }
+export type ActivityProps = { id: number, date: string, activity_name: string, strava_url: string, created_at: string, distance: number, duration: number, pace: number }
 export type EventRegisterProps = { bib: string, id: number, total_distance: string, total_duration: number, total_pace: number, gender: string, activity: ActivityProps[], user: { name: string, email: string } }
 
 export default function Dashboard() {
@@ -33,9 +33,7 @@ export default function Dashboard() {
         return new Date(dateString).toLocaleDateString('en-US', {
             year: 'numeric',
             month: 'long',
-            day: 'numeric',
-            hour: '2-digit',
-            minute: '2-digit'
+            day: 'numeric'
         });
     }
 
@@ -89,15 +87,15 @@ export default function Dashboard() {
                                                 <CardContent>
                                                     <div className="space-y-4">
                                                         <div>
-                                                            <p className="text-sm text-muted-foreground">Distance</p>
-                                                            <p className="font-semibold">{eventRegister.total_distance} km</p>
+                                                            <p className="text-sm text-muted-foreground">Total Distance</p>
+                                                            <p className="font-semibold">{eventRegister.total_distance ?? 0} km</p>
                                                         </div>
                                                         <div>
-                                                            <p className="text-sm text-muted-foreground">Duration</p>
+                                                            <p className="text-sm text-muted-foreground">Total Duration</p>
                                                             <p className="font-semibold">{formatDuration(eventRegister.total_duration)}</p>
                                                         </div>
                                                         <div>
-                                                            <p className="text-sm text-muted-foreground">Average Pace</p>
+                                                            <p className="text-sm text-muted-foreground">Total Pace</p>
                                                             <p className="font-semibold">{formatPace(eventRegister.total_pace)}</p>
                                                         </div>
                                                     </div>
@@ -129,11 +127,11 @@ export default function Dashboard() {
                                                             <div>
                                                                 <h3 className="text-lg font-semibold">{activity.activity_name}</h3>
                                                                 <p className="text-sm text-muted-foreground">
-                                                                    {formatDate(activity.created_at)}
+                                                                    {formatDate(activity.date)}
                                                                 </p>
                                                             </div>
                                                             <div className="flex items-center gap-4">
-                                                                {activity.strava_url && (
+                                                                {activity.strava_url !== '-' && (
                                                                     <a
                                                                         href={activity.strava_url}
                                                                         target="_blank"

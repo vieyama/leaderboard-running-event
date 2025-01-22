@@ -14,7 +14,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::get('/admin-dashboard', [DashboardController::class, 'admin'])->name('admin-dashboard');
     Route::get('/dashboard/event/{id}', [DashboardController::class, 'detailEvent'])->name('detail-event');
-    Route::delete('/activity/{id}', [DashboardController::class, 'destroyActivity'])->name('delete-activity');
+    Route::delete('/activity/{id}', [ActivityController::class, 'destroyActivity'])->name('delete-activity');
     Route::get('/event/register/{id}', [EventRegisterController::class, 'register'])->name('event-register');
     Route::post('/activity/create', [ActivityController::class, 'store'])->name('activity.store');
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

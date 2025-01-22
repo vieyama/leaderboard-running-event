@@ -4,15 +4,20 @@ import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
 import { toast } from "@/hooks/use-toast"
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/Components/ui/form"
+import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/Components/ui/form"
 import { router, usePage } from "@inertiajs/react"
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
-import { Plus } from "lucide-react"
+import { CalendarIcon, Plus } from "lucide-react"
+import { cn } from "@/lib/utils"
+import dayjs from "dayjs"
+import { Popover, PopoverContent, PopoverTrigger } from "@/Components/ui/popover"
+import { Calendar } from "@/Components/ui/calendar"
 
 const FormSchema = z.object({
     activity_name: z.string().min(5, "Activity name must be at least 5 characters"),
     description: z.string().nullable(),
+    date: z.date({ required_error: "Activity date is required." }),
     distance: z.number().positive("Distance must be a positive number"),
     duration: z.string().regex(/^\d{2}:\d{2}:\d{2}$/, 'Please enter a valid duration (HH:MM:SS)'),
     pace: z.string().regex(/^\d{2}:\d{2}$/, 'Please enter a valid pace (e.g., 03:50)')
@@ -49,6 +54,7 @@ export function ModalActivity({ eventRegisterId }: { eventRegisterId: number }) 
 
         router.post("/activity/create", {
             ...data,
+            date: dayjs(data.date).format('YYYY-MM-DD'),
             duration: durationInSeconds,
             pace: paceInSeconds,
             userId: user.id,
@@ -83,6 +89,47 @@ export function ModalActivity({ eventRegisterId }: { eventRegisterId: number }) 
                 </DialogHeader>
                 <Form {...form}>
                     <form onSubmit={form.handleSubmit(onSubmit)} className="w-full space-y-6">
+                        <FormField
+                            control={form.control}
+                            name="date"
+                            render={({ field }) => (
+                                <FormItem className="flex flex-col">
+                                    <FormLabel>Activity Date</FormLabel>
+                                    <Popover>
+                                        <PopoverTrigger asChild>
+                                            <FormControl>
+                                                <Button
+                                                    variant={"outline"}
+                                                    className={cn(
+                                                        "w-full pl-3 text-left font-normal",
+                                                        !field.value && "text-muted-foreground"
+                                                    )}
+                                                >
+                                                    {field.value ? (
+                                                        dayjs(field.value).format("DD MMM YYYY")
+                                                    ) : (
+                                                        <span>Pick a date</span>
+                                                    )}
+                                                    <CalendarIcon className="w-4 h-4 ml-auto opacity-50" />
+                                                </Button>
+                                            </FormControl>
+                                        </PopoverTrigger>
+                                        <PopoverContent className="w-auto p-0" align="start">
+                                            <Calendar
+                                                mode="single"
+                                                selected={field.value}
+                                                onSelect={field.onChange}
+                                                disabled={(date: Date) =>
+                                                    date > new Date() || date < new Date("1900-01-01")
+                                                }
+                                                initialFocus
+                                            />
+                                        </PopoverContent>
+                                    </Popover>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
                         <FormField
                             control={form.control}
                             name="activity_name"
