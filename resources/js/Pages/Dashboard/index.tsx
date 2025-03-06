@@ -6,6 +6,7 @@ import { useState } from 'react';
 import { useSetAtom } from 'jotai';
 import { eventIdAtom } from '@/Store/eventAtom';
 
+export type ParticipantProps = { name: string, email: string, gender: string }
 export type EventProps = { event_name: string, id: number, event_register: { user_id: number; }[] }
 
 export default function Dashboard() {

@@ -1,4 +1,4 @@
-import { Label } from "@/components/ui/label"
+import { Label } from "@/Components/ui/label"
 import {
     Popover,
     PopoverContent,
@@ -7,7 +7,7 @@ import {
 import dayjs from "dayjs"
 import relativeTime from 'dayjs/plugin/relativeTime';
 import duration from 'dayjs/plugin/duration';
-import { Button } from "@/components/ui/button";
+import { Button } from "@/Components/ui/button";
 import { ActivityProps } from "../DetailEvent";
 import { ModalDeleteActivity } from "./ModalDeleteActivity";
 import { useState } from "react";

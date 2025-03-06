@@ -8,7 +8,7 @@ import {
     AlertDialogTitle,
     AlertDialogTrigger,
 } from "@/Components/ui/alert-dialog"
-import { Button } from "@/components/ui/button"
+import { Button } from "@/Components/ui/button"
 import { toast } from "@/hooks/use-toast";
 import { router } from "@inertiajs/react";
 import { Trash2 } from "lucide-react";

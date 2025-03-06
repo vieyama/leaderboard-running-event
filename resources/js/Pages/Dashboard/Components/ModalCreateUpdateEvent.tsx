@@ -1,4 +1,4 @@
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/Components/ui/dialog"
 import { Input } from "@/Components/ui/input"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
@@ -8,7 +8,7 @@ import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, For
 import { router } from "@inertiajs/react"
 import { useState } from "react"
 import { Switch } from "@/Components/ui/switch"
-import { Button } from "@/components/ui/button"
+import { Button } from "@/Components/ui/button"
 import { Textarea } from "@/Components/ui/textarea"
 
 const FormSchema = z.object({
