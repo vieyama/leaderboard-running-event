@@ -1,6 +1,5 @@
 import { Button } from '@/Components/ui/button';
 import { Form, FormControl, FormField, FormItem, FormMessage } from '@/Components/ui/form';
-import { Input } from '@/Components/ui/input';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/Components/ui/table';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/Components/ui/tabs';
 import Guest from '@/Layouts/GuestLayout';
@@ -10,6 +9,7 @@ import { useForm } from "react-hook-form"
 import { useState } from 'react';
 import { Inbox } from 'lucide-react';
 import { EmptyTable } from '@/Components/ui/empty-table';
+import { Input } from '@/Components/ui/input';
 
 export interface FakeUsersProps {
     success: boolean;
@@ -86,19 +86,11 @@ export default function Welcome() {
         return `${minutes}:${remainingSeconds.toString().padStart(2, '0')} /km`;
     }
 
-    function formatDate(dateString: string) {
-        return new Date(dateString).toLocaleDateString('en-US', {
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric'
-        });
-    }
-
     return (
         <Guest>
             <Head title="Welcome" />
             <section className="relative">
-                <div className="max-w-6xl px-4 mx-auto sm:px-6">
+                <div className="px-4 mx-auto max-w-6xl sm:px-6">
 
                     {/* Hero content */}
                     <div className="pt-32 text-center">
@@ -106,7 +98,7 @@ export default function Welcome() {
                             className="mb-6 border-y [border-image:linear-gradient(to_right,transparent,theme(colors.slate.300/.8),transparent)1]"
                             data-aos="zoom-y-out"
                         >
-                            <div className="relative overflow-hidden rounded-2xl">
+                            <div className="overflow-hidden relative rounded-2xl">
                                 <img
                                     src="https://pelindorunride.id/assets/images/slide-03.jpg?version=5"
                                     alt="Team collaboration"
@@ -135,7 +127,7 @@ export default function Welcome() {
             </section>
 
             <section>
-                <div className="max-w-6xl px-4 mx-auto sm:px-6">
+                <div className="px-4 mx-auto max-w-6xl sm:px-6">
                     <Tabs defaultValue="1">
                         {eventList.length ? <div className='overflow-x-auto max-w-96 xs:max-w-full'>
                             <TabsList className='justify-start xs:justify-center'>
@@ -143,16 +135,16 @@ export default function Welcome() {
                                     <TabsTrigger key={item.id} value={item.id.toString()}>{item.event_name}</TabsTrigger>
                                 ))}
                             </TabsList>
-                        </div> : <div className="flex flex-col items-center justify-center">
+                        </div> : <div className="flex flex-col justify-center items-center">
                             <h3 className="mt-4 text-lg font-semibold">No Running Events Available</h3>
-                            <p className="max-w-sm mt-2 mb-4 text-sm text-center text-muted-foreground">
+                            <p className="mt-2 mb-4 max-w-sm text-sm text-center text-muted-foreground">
                                 No running events have been scheduled yet.
                             </p>
                         </div>
                         }
 
 
-                        <div className='flex items-center justify-between gap-2'>
+                        <div className='flex gap-2 justify-between items-center'>
                             <Form {...form}>
                                 <form onSubmit={form.handleSubmit(onSearch)} className="flex gap-3 my-5">
                                     <FormField
@@ -170,7 +162,7 @@ export default function Welcome() {
                                     <Button type="submit">Submit</Button>
                                 </form>
                             </Form>
-                            <select value={gender} onChange={handleSelectGender} className='text-sm text-gray-900 border border-gray-300 rounded-lg'>
+                            <select value={gender} onChange={handleSelectGender} className='text-sm text-gray-900 rounded-lg border border-gray-300'>
                                 <option value="all">All</option>
                                 <option value="male">Male</option>
                                 <option value="female">Female</option>
@@ -209,7 +201,7 @@ export default function Welcome() {
                                                 }
                                             </TableBody>
                                         </Table>
-                                        <div className="flex items-center justify-end w-full py-4 space-x-2">
+                                        <div className="flex justify-end items-center py-4 space-x-2 w-full">
                                             <div className="flex-1 text-sm text-muted-foreground">
                                                 {item?.eventRegister?.to} of{" "}
                                                 {item?.eventRegister?.total} data.
@@ -233,12 +225,12 @@ export default function Welcome() {
                                 </TabsContent>
                             )
                         }) :
-                            <div className="flex flex-col items-center justify-center">
-                                <div className="flex items-center justify-center w-12 h-12 rounded-full bg-muted">
+                            <div className="flex flex-col justify-center items-center">
+                                <div className="flex justify-center items-center w-12 h-12 rounded-full bg-muted">
                                     <Inbox className="w-6 h-6 text-muted-foreground" />
                                 </div>
                                 <h3 className="mt-4 text-lg font-semibold">Leaderboard Currently Empty</h3>
-                                <p className="max-w-sm mt-2 mb-4 text-sm text-center text-muted-foreground">
+                                <p className="mt-2 mb-4 max-w-sm text-sm text-center text-muted-foreground">
                                     No participants have registered for this event yet. Check back later or create a new entry to see the leaderboard in action!
                                 </p>
                             </div>}

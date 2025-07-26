@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Models\Company;
 use App\Models\User;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\RedirectResponse;
@@ -20,7 +21,9 @@ class RegisteredUserController extends Controller
      */
     public function create(): Response
     {
-        return Inertia::render('Auth/Register');
+        return Inertia::render('Auth/Register', [
+            'companies' => Company::orderBy('company_name')->get(['id', 'company_name'])
+        ]);
     }
 
     /**
@@ -34,6 +37,7 @@ class RegisteredUserController extends Controller
             'name' => 'required|string|max:255',
             'gender' => 'required|string|max:255',
             'email' => 'required|string|lowercase|email|max:255|unique:'.User::class,
+            'company_id' => 'required|exists:companies,id',
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
         ]);
 
@@ -41,6 +45,7 @@ class RegisteredUserController extends Controller
             'name' => $request->name,
             'email' => $request->email,
             'gender' => $request->gender,
+            'company_id' => $request->company_id,
             'password' => Hash::make($request->password),
         ]);
 

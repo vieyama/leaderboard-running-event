@@ -24,12 +24,34 @@ class DashboardController extends Controller
             return redirect('/admin-dashboard');
         }
 
-        $events = Events::with('eventRegister')->where('status', 1)->get();
+        $now = now()->format('Y-m-d');
+        $events = Events::with('eventRegister')->where('status', 1)
+            ->whereDate('start_date', '<=', $now)
+            ->whereDate('end_date', '>=', $now)
+            ->orderBy('start_date', 'asc')->get();
         return Inertia::render('Dashboard/index', [
             'events' => $events
         ]);
     }
 
+    public function myEvents()
+    {
+        $user = auth()->user();
+        
+        $events = Events::whereHas('eventRegister', function($query) use ($user) {
+                $query->where('user_id', $user->id);
+            })
+            ->with(['eventRegister' => function($query) use ($user) {
+                $query->where('user_id', $user->id);
+            }])
+            ->orderBy('start_date', 'desc')
+            ->get();
+            
+        return Inertia::render('Dashboard/MyEvents', [
+            'events' => $events
+        ]);
+    }
+    
     public function admin()
     {
         $auth = Auth();

@@ -8,6 +8,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class User extends Authenticatable
 {
@@ -24,7 +25,8 @@ class User extends Authenticatable
         'email',
         'password',
         'gender',
-        'type'
+        'type',
+        'company_id'
     ];
 
     /**
@@ -63,8 +65,16 @@ class User extends Authenticatable
         );
     }
 
-    public function eventRegister(): HasMany
+    public function eventRegisters(): HasMany
     {
-        return $this->hasMany(EventRegisters::class, 'user_id', 'id');
+        return $this->hasMany(EventRegisters::class);
+    }
+
+    /**
+     * Get the company that the user belongs to.
+     */
+    public function company(): BelongsTo
+    {
+        return $this->belongsTo(Company::class);
     }
 }

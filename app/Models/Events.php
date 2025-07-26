@@ -13,6 +13,15 @@ class Events extends Model
     protected $fillable = [
         'event_name',
         'description',
+        'start_date',
+        'end_date',
+        'status',
+        'image_path'
+    ];
+
+    protected $casts = [
+        'start_date' => 'date:Y-m-d',
+        'end_date' => 'date:Y-m-d',
         'status' => 'boolean'
     ];
 

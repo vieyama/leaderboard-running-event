@@ -4,6 +4,7 @@ import { Head, Link, router, usePage } from '@inertiajs/react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/Components/ui/table';
 import { ModalCreateUpdateEvent } from './Components/ModalCreateUpdateEvent';
 import { ModalDeleteEvent } from './Components/ModalDeleteEvent';
+import { ArrowLeft } from 'lucide-react';
 
 
 export type ActivityProps = { activity_name: string, strava_url: string, created_at: string, distance: number, duration: number, pace: number }
@@ -20,9 +21,18 @@ export default function Dashboard() {
     return (
         <AuthenticatedLayout
             header={
-                <h2 className="text-xl font-semibold leading-tight text-gray-800">
-                    Dashboard
-                </h2>
+                <div className="flex items-center space-x-4">
+                    <button 
+                        onClick={() => router.visit('/admin-dashboard')}
+                        className="p-1 rounded-full transition-colors hover:bg-gray-100"
+                        title="Go back"
+                    >
+                        <ArrowLeft className="w-5 h-5 text-gray-600" />
+                    </button>
+                    <h2 className="text-xl font-semibold leading-tight text-gray-800">
+                        Event Management
+                    </h2>
+                </div>
             }
         >
             <Head title="Dashboard" />
@@ -30,14 +40,23 @@ export default function Dashboard() {
             <div className="py-6">
                 <div className="mx-auto max-w-7xl sm:px-6 lg:px-8">
                     <Card className="w-full">
-                        <CardHeader className='flex flex-row items-center justify-between'>
+                        <CardHeader className='flex flex-row justify-between items-center'>
                             <div className='flex flex-col gap-1'>
                                 <CardTitle>Event: {event?.event_name}</CardTitle>
                                 <CardDescription>{event?.description}</CardDescription>
                             </div>
-                            <div className='flex items-center gap-3'>
+                            <div className='flex gap-3 items-center'>
                                 <ModalDeleteEvent {...event} />
-                                <ModalCreateUpdateEvent {...event} status={event.status > 0} onFinish={onFinish} />
+                                <ModalCreateUpdateEvent 
+                                    id={event.id}
+                                    event_name={event.event_name}
+                                    description={event.description}
+                                    status={event.status > 0}
+                                    start_date={event.start_date}
+                                    end_date={event.end_date}
+                                    image_path={event.image_path}
+                                    onFinish={onFinish} 
+                                />
                             </div>
                         </CardHeader>
                         <CardContent className="grid gap-4 min-h-96">
@@ -68,7 +87,7 @@ export default function Dashboard() {
                                         ))}
                                     </TableBody>
                                 </Table>
-                                <div className="flex items-center justify-end w-full py-4 space-x-2">
+                                <div className="flex justify-end items-center py-4 space-x-2 w-full">
                                     <div className="flex-1 text-sm text-muted-foreground">
                                         {eventRegisters?.to} of{" "}
                                         {eventRegisters?.total} data.

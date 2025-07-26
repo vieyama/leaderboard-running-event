@@ -14,17 +14,24 @@ class AdminSeeder extends Seeder
      */
     public function run(): void
     {
-        // Insert a single user with type 0
-        DB::table('users')->insert([
-            'name' => 'Superadmin', // You can change this to any name you prefer
-            'email' => 'superadmin@s2p.com', // Change to a unique email
-            'password' => Hash::make('qwerty123'), // Set a password
-            'gender' => 'male', // Set the user type to 0
-            'type' => 1, // Set the user type to 0
-            'email_verified_at' => now(),
-            'remember_token' => Str::random(10),
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
+        // Check if admin user already exists
+        if (!DB::table('users')->where('email', 'superadmin@s2p.com')->exists()) {
+            // Insert a single admin user
+            DB::table('users')->insert([
+                'name' => 'Superadmin',
+                'email' => 'superadmin@s2p.com',
+                'password' => Hash::make('qwerty123'),
+                'gender' => 'male',
+                'type' => 1, // 1 for admin
+                'email_verified_at' => now(),
+                'remember_token' => Str::random(10),
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+            
+            $this->command->info('Admin user created successfully!');
+        } else {
+            $this->command->info('Admin user already exists.');
+        }
     }
 }

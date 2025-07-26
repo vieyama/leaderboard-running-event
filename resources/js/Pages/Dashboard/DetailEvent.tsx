@@ -1,7 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/Components/ui/card';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head, usePage } from '@inertiajs/react';
-import { Timer, Medal, Activity, ExternalLink } from 'lucide-react';
+import { Timer, Medal, Activity, ExternalLink, ArrowLeft } from 'lucide-react';
 import { ScrollArea } from '@/Components/ui/scroll-area';
 import { ModalDeleteActivity } from './Components/ModalDeleteActivity';
 import { ModalActivity } from './Components/ModalActivity';
@@ -14,6 +14,14 @@ export default function Dashboard() {
     const isAdmin = usePage().props?.is_admin
     const eventRegister = usePage().props?.eventRegister as EventRegisterProps
     const activities = eventRegister?.activity
+    
+    // Check if the event is currently active
+    const isEventActive = () => {
+        const now = new Date();
+        const startDate = new Date(event.start_date);
+        const endDate = new Date(event.end_date);
+        return now >= startDate && now <= endDate;
+    }
 
     function formatDuration(seconds: number) {
         const hours = Math.floor(seconds / 3600);
@@ -40,15 +48,24 @@ export default function Dashboard() {
     return (
         <AuthenticatedLayout
             header={
-                <h2 className="text-xl font-semibold leading-tight text-gray-800">
-                    Dashboard
-                </h2>
+                <div className="flex items-center space-x-4">
+                    <button 
+                        onClick={() => window.history.back()}
+                        className="p-1 rounded-full transition-colors hover:bg-gray-100"
+                        title="Go back"
+                    >
+                        <ArrowLeft className="w-5 h-5 text-gray-600" />
+                    </button>
+                    <h2 className="text-xl font-semibold leading-tight text-gray-800">
+                        Event Details
+                    </h2>
+                </div>
             }
         >
             <Head title="Dashboard" />
             <ScrollArea className='h-[80vh] h-800:h-[85vh]'>
-                <div className="min-h-screen px-4 py-12 bg-gray-50 sm:px-6 lg:px-8">
-                    <div className="max-w-6xl mx-auto">
+                <div className="px-4 py-12 min-h-screen bg-gray-50 sm:px-6 lg:px-8">
+                    <div className="mx-auto max-w-6xl">
                         <div className="space-y-6">
                             {/* Runner Info Card */}
                             <Card className="shadow-lg">
@@ -63,7 +80,7 @@ export default function Dashboard() {
                                             {/* Event Details */}
                                             <Card>
                                                 <CardHeader className="pb-2">
-                                                    <div className="flex items-center gap-2">
+                                                    <div className="flex gap-2 items-center">
                                                         <Medal className="w-5 h-5 text-primary" />
                                                         <CardTitle className="text-lg">Event Details</CardTitle>
                                                     </div>
@@ -79,7 +96,7 @@ export default function Dashboard() {
                                             {/* Performance Stats */}
                                             <Card>
                                                 <CardHeader className="pb-2">
-                                                    <div className="flex items-center gap-2">
+                                                    <div className="flex gap-2 items-center">
                                                         <Timer className="w-5 h-5 text-primary" />
                                                         <CardTitle className="text-lg">Performance</CardTitle>
                                                     </div>
@@ -109,12 +126,25 @@ export default function Dashboard() {
                             {/* Activities Section */}
                             <Card className="shadow-lg">
                                 <CardHeader>
-                                    <div className="flex items-center justify-between">
-                                        <div className="flex items-center gap-2">
+                                    <div className="flex justify-between items-center">
+                                        <div className="flex gap-2 items-center">
                                             <Activity className="w-5 h-5 text-primary" />
                                             <CardTitle className="text-lg">Activities</CardTitle>
                                         </div>
-                                        {!isAdmin && <ModalActivity eventRegisterId={eventRegister.id} />}
+                                        {!isAdmin && isEventActive() && (
+                                            <div className="relative group">
+                                                <ModalActivity 
+                                                    eventRegisterId={eventRegister.id} 
+                                                />
+                                            </div>
+                                        )}
+                                        {!isEventActive() && (
+                                            <div className="ml-2 px-3 py-1 text-sm rounded-full bg-yellow-100 text-yellow-800 flex items-center">
+                                                {new Date() < new Date(event.start_date) 
+                                                    ? `Event starts on ${formatDate(event.start_date)}` 
+                                                    : `Event ended on ${formatDate(event.end_date)}`}
+                                            </div>
+                                        )}
                                     </div>
                                 </CardHeader>
                                 <CardContent>
@@ -123,20 +153,20 @@ export default function Dashboard() {
                                             <Card key={activity.id} className="bg-gray-50">
                                                 <CardContent className="pt-6">
                                                     <div className="flex flex-col space-y-4">
-                                                        <div className="flex items-start justify-between">
+                                                        <div className="flex justify-between items-start">
                                                             <div>
                                                                 <h3 className="text-lg font-semibold">{activity.activity_name}</h3>
                                                                 <p className="text-sm text-muted-foreground">
                                                                     {formatDate(activity.date)}
                                                                 </p>
                                                             </div>
-                                                            <div className="flex items-center gap-4">
+                                                            <div className="flex gap-4 items-center">
                                                                 {activity.strava_url !== '-' && (
                                                                     <a
                                                                         href={activity.strava_url}
                                                                         target="_blank"
                                                                         rel="noopener noreferrer"
-                                                                        className="flex items-center gap-1 text-primary hover:text-primary/80"
+                                                                        className="flex gap-1 items-center text-primary hover:text-primary/80"
                                                                     >
                                                                         <span className="text-sm">Strava</span>
                                                                         <ExternalLink className="w-4 h-4" />

@@ -15,8 +15,13 @@ class EventRegisterController extends Controller
     {
         $search = $request->query('search') ?? '';
         $gender = $request->query('gender') ?? '';
-        // Fetch events with active status
-        $events = Events::where('status', 1)->get();
+        // Fetch active events that are currently running (between start and end dates)
+        $now = now()->format('Y-m-d');
+        $events = Events::where('status', 1)
+            ->whereDate('start_date', '<=', $now)
+            ->whereDate('end_date', '>=', $now)
+            ->orderBy('start_date', 'asc')
+            ->get();
 
         $events->each(function ($event) use ($request, $search, $gender) {
             $event->eventRegister = $event->eventRegister()

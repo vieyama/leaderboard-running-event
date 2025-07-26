@@ -18,10 +18,21 @@ class ProfileController extends Controller
      */
     public function edit(Request $request): Response
     {
+        $user = $request->user()->load('company');
+        
         return Inertia::render('Profile/Edit', [
-            'mustVerifyEmail' => $request->user() instanceof MustVerifyEmail,
+            'mustVerifyEmail' => $user instanceof MustVerifyEmail,
             'status' => session('status'),
-            'participant' => $request->user(),
+            'participant' => array_merge($user->toArray(), [
+                'company' => $user->company ? [
+                    'id' => $user->company->id,
+                    'name' => $user->company->company_name ?: '-',
+                    'email' => $user->company->email ?: '-',
+                    'phone' => $user->company->phone ?: '-',
+                    'address' => $user->company->address ?: '-',
+                    'logo' => $user->company->logo ?? null,
+                ] : null
+            ]),
         ]);
     }
 

@@ -11,9 +11,9 @@ export default function Authenticated({
     children,
 }: PropsWithChildren<{ header?: ReactNode }>) {
     const user = usePage().props.auth.user;
-
     const [showingNavigationDropdown, setShowingNavigationDropdown] =
         useState(false);
+    console.log(user);
 
     return (
         <div className="min-h-screen bg-gray-100">
@@ -23,7 +23,7 @@ export default function Authenticated({
                         <div className="flex">
                             <div className="flex items-center shrink-0">
                                 <Link href="/">
-                                    <ApplicationLogo className="block w-auto text-gray-800 fill-current h-9" />
+                                    <ApplicationLogo className="block w-auto h-9 text-gray-800 fill-current" />
                                 </Link>
                             </div>
 
@@ -34,6 +34,24 @@ export default function Authenticated({
                                 >
                                     Dashboard
                                 </NavLink>
+                                {user.type !== 'admin' && <NavLink
+                                    href={route('my.events')}
+                                    active={route().current('my.events')}
+                                >
+                                    My Events
+                                </NavLink>}
+                                {user.type === 'admin' && <NavLink
+                                    href={route('users.index')}
+                                    active={route().current('users.*')}
+                                >
+                                    Users
+                                </NavLink>}
+                                {user.type === 'admin' && <NavLink
+                                    href={route('admin.contact-settings.index')}
+                                    active={route().current('admin.contact-settings.*')}
+                                >
+                                    Contact Settings
+                                </NavLink>}
                             </div>
                         </div>
 
@@ -44,7 +62,7 @@ export default function Authenticated({
                                         <span className="inline-flex rounded-md">
                                             <button
                                                 type="button"
-                                                className="inline-flex items-center px-3 py-2 text-sm font-medium leading-4 text-gray-500 transition duration-150 ease-in-out bg-white border border-transparent rounded-md hover:text-gray-700 focus:outline-none"
+                                                className="inline-flex items-center px-3 py-2 text-sm font-medium leading-4 text-gray-500 bg-white rounded-md border border-transparent transition duration-150 ease-in-out hover:text-gray-700 focus:outline-none"
                                             >
                                                 {user.name}
 
@@ -89,7 +107,7 @@ export default function Authenticated({
                                         (previousState) => !previousState,
                                     )
                                 }
-                                className="inline-flex items-center justify-center p-2 text-gray-400 transition duration-150 ease-in-out rounded-md hover:bg-gray-100 hover:text-gray-500 focus:bg-gray-100 focus:text-gray-500 focus:outline-none"
+                                className="inline-flex justify-center items-center p-2 text-gray-400 rounded-md transition duration-150 ease-in-out hover:bg-gray-100 hover:text-gray-500 focus:bg-gray-100 focus:text-gray-500 focus:outline-none"
                             >
                                 <svg
                                     className="w-6 h-6"

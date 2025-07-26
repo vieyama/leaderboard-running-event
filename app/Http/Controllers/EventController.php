@@ -13,26 +13,90 @@ class EventController extends Controller
 {
     public function store(Request $request): RedirectResponse
     {
-        Events::create([
-            'description' => $request->description ?? '-',
-            'event_name' => $request->event_name,
-            'status' => 1
-        ]);
+        try {
+            $validated = $request->validate([
+                'event_name' => 'required|string|min:5',
+                'description' => 'nullable|string',
+                'start_date' => 'required|date',
+                'end_date' => 'required|date|after_or_equal:start_date',
+                'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            ]);
 
-        return redirect()->back()->with('success', 'Data saved.');
+            $imagePath = null;
+            if ($request->hasFile('image')) {
+                $image = $request->file('image');
+                $imageName = time() . '_' . $image->getClientOriginalName();
+                $imagePath = $image->storeAs('events', $imageName, 'public');
+            }
+
+            Events::create([
+                'event_name' => $validated['event_name'],
+                'description' => $validated['description'] ?? '-',
+                'start_date' => $validated['start_date'],
+                'end_date' => $validated['end_date'],
+                'status' => 1,
+                'image_path' => $imagePath
+            ]);
+
+            return redirect()->back()->with('success', 'Event created successfully.');
+        } catch (\Exception $e) {
+            return redirect()->back()
+                ->with('error', 'Error creating event: ' . $e->getMessage())
+                ->withInput();
+        }
+
+        return redirect()->back()->with('success', 'Event created successfully.');
     }
 
     public function update(Request $request, $eventId): RedirectResponse
     {
-        $event = Events::find($eventId);
+        try {
+            // Convert string 'true'/'false' to boolean
+            $request->merge([
+                'status' => filter_var($request->status, FILTER_VALIDATE_BOOLEAN)
+            ]);
 
-        $event->event_name = $request->event_name;
-        $event->description = $request->description ?? '-';
-        $event->status = (bool) $request->status;
+            $validated = $request->validate([
+                'event_name' => 'required|string|min:5',
+                'description' => 'nullable|string',
+                'status' => 'required|boolean',
+                'start_date' => 'required|date',
+                'end_date' => 'required|date|after_or_equal:start_date',
+                'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            ]);
 
-        $event->save();
+            $event = Events::findOrFail($eventId);
 
-        return redirect()->back()->with('success', 'Data saved.');
+            $updateData = [
+                'event_name' => $validated['event_name'],
+                'description' => $validated['description'] ?? '-',
+                'status' => $validated['status'] ?? $event->status,
+                'start_date' => $validated['start_date'],
+                'end_date' => $validated['end_date'],
+            ];
+
+            if ($request->hasFile('image')) {
+                // Delete old image if exists
+                if ($event->image_path) {
+                    \Storage::disk('public')->delete($event->image_path);
+                }
+                
+                $image = $request->file('image');
+                $imageName = time() . '_' . $image->getClientOriginalName();
+                $updateData['image_path'] = $image->storeAs('events', $imageName, 'public');
+            }
+
+            $event->update($updateData);
+
+            return redirect()->back()->with('success', 'Event updated successfully.');
+        } catch (\Exception $e) {
+            dd($e);
+            return redirect()->back()
+                ->with('error', 'Error updating event: ' . $e->getMessage())
+                ->withInput();
+        }
+
+        return redirect()->back()->with('success', 'Event updated successfully.');
     }
 
     public function detail($id)

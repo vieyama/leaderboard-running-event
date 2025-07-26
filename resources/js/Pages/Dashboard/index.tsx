@@ -6,7 +6,19 @@ import { useState } from 'react';
 import { useSetAtom } from 'jotai';
 import { eventIdAtom } from '@/Store/eventAtom';
 
-export type ParticipantProps = { name: string, email: string, gender: string }
+export type ParticipantProps = { 
+    name: string; 
+    email: string; 
+    gender: string;
+    company?: {
+        id: number;
+        name: string;
+        email: string;
+        phone: string;
+        address: string;
+        logo?: string;
+    };
+}
 export type EventProps = { event_name: string, id: number, event_register: { user_id: number; }[] }
 
 export default function Dashboard() {
@@ -41,7 +53,7 @@ export default function Dashboard() {
                             <CardTitle className='text-2xl'>Made for You</CardTitle>
                             <CardDescription>Join our event and start running!</CardDescription>
                         </CardHeader>
-                        <CardContent className='flex flex-wrap justify-center gap-8'>
+                        <CardContent className='flex flex-wrap gap-8 justify-center'>
 
                             {events?.map((event, key) => {
                                 const imageNumber = (key % 5) + 1;
@@ -50,7 +62,7 @@ export default function Dashboard() {
                                 return (
                                     <div className="relative transition-transform transform hover:scale-105" key={key}>
                                         {/* Ribbon */}
-                                        {registered && <div className="absolute z-10 -right-1 -top-1">
+                                        {registered && <div className="absolute -top-1 -right-1 z-10">
                                             <div className="relative bg-green-500 text-white text-sm px-4 py-1 before:absolute before:top-0 before:right-full before:border-green-500 before:border-t-[12px] before:border-l-[12px] before:border-l-transparent after:absolute after:left-0 after:top-full after:border-r-[12px] after:border-t-[6px] after:border-green-700 after:border-transparent">
                                                 Registered
                                             </div>

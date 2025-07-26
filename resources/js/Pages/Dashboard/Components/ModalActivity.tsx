@@ -4,9 +4,9 @@ import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
 import { toast } from "@/hooks/use-toast"
-import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/Components/ui/form"
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/Components/ui/form"
 import { router, usePage } from "@inertiajs/react"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Button } from "@/Components/ui/button"
 import { CalendarIcon, Plus } from "lucide-react"
 import { cn } from "@/lib/utils"
@@ -33,8 +33,12 @@ const convertPaceToSeconds = (pace: string) => {
     return minutes * 60 + seconds;
 };
 
+interface ModalActivityProps {
+    eventRegisterId: number;
+    disabled?: boolean;
+}
 
-export function ModalActivity({ eventRegisterId }: { eventRegisterId: number }) {
+export const ModalActivity = ({ eventRegisterId, disabled = false }: ModalActivityProps) => {
     const [open, setOpen] = useState(false);
     const user = usePage().props.auth.user;
     const form = useForm<z.infer<typeof FormSchema>>({
@@ -42,11 +46,30 @@ export function ModalActivity({ eventRegisterId }: { eventRegisterId: number }) 
         defaultValues: {
             activity_name: "",
             description: "",
+            date: new Date(),
             distance: 0,
-            duration: '00:00:00',
-            pace: '00:00'
+            duration: "00:00:00",
+            pace: "00:00"
         },
     })
+
+    // Watch distance and duration to calculate pace
+    const watchDistance = form.watch('distance');
+    const watchDuration = form.watch('duration');
+
+    useEffect(() => {
+        if (watchDistance > 0 && watchDuration) {
+            const [hours, minutes, seconds] = watchDuration.split(':').map(Number);
+            const totalSeconds = hours * 3600 + minutes * 60 + seconds;
+            const paceInSeconds = totalSeconds / watchDistance;
+            
+            const paceMinutes = Math.floor(paceInSeconds / 60);
+            const paceSeconds = Math.round(paceInSeconds % 60);
+            
+            const formattedPace = `${String(paceMinutes).padStart(2, '0')}:${String(paceSeconds).padStart(2, '0')}`;
+            form.setValue('pace', formattedPace, { shouldValidate: true });
+        }
+    }, [watchDistance, watchDuration, form]);
 
     function onSubmit(data: z.infer<typeof FormSchema>) {
         const durationInSeconds = convertTimeToSeconds(data.duration);
@@ -75,7 +98,7 @@ export function ModalActivity({ eventRegisterId }: { eventRegisterId: number }) 
     return (
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
-                <Button className="flex items-center gap-2">
+                <Button className="flex gap-2 items-center" disabled={disabled}>
                     <Plus className="w-4 h-4" />
                     Add Activity
                 </Button>
@@ -88,7 +111,7 @@ export function ModalActivity({ eventRegisterId }: { eventRegisterId: number }) 
                     </DialogDescription>
                 </DialogHeader>
                 <Form {...form}>
-                    <form onSubmit={form.handleSubmit(onSubmit)} className="w-full space-y-6">
+                    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 w-full">
                         <FormField
                             control={form.control}
                             name="date"
@@ -110,11 +133,11 @@ export function ModalActivity({ eventRegisterId }: { eventRegisterId: number }) 
                                                     ) : (
                                                         <span>Pick a date</span>
                                                     )}
-                                                    <CalendarIcon className="w-4 h-4 ml-auto opacity-50" />
+                                                    <CalendarIcon className="ml-auto w-4 h-4 opacity-50" />
                                                 </Button>
                                             </FormControl>
                                         </PopoverTrigger>
-                                        <PopoverContent className="w-auto p-0" align="start">
+                                        <PopoverContent className="p-0 w-auto" align="start">
                                             <Calendar
                                                 mode="single"
                                                 selected={field.value}
@@ -193,9 +216,12 @@ export function ModalActivity({ eventRegisterId }: { eventRegisterId: number }) 
                                     <FormControl>
                                         <Input
                                             type="time"
+                                            step="1"
                                             placeholder="16:49"
                                             onChange={e => field.onChange(e.target.value)}
                                             value={field.value}
+                                            readOnly
+                                            className="bg-gray-100"
                                         />
                                     </FormControl>
                                     <FormMessage />
