@@ -51,7 +51,7 @@ export default function EditContactSettings({ auth, settings }: Props) {
     };
 
     return (
-        <AuthenticatedLayout 
+        <AuthenticatedLayout
             header={
                 <h2 className="text-xl font-semibold leading-tight text-gray-800">
                     Edit Contact Settings
@@ -59,9 +59,9 @@ export default function EditContactSettings({ auth, settings }: Props) {
             }
         >
             <Head title="Edit Contact Settings" />
-            
+
             <div className="container py-6 mx-auto">
-                <div className="flex justify-between items-center mb-6">
+                <div className="flex items-center justify-between mb-6">
                     <h1 className="text-2xl font-bold">Edit Contact Settings</h1>
                     <Link href={route('admin.contact-settings.index')}>
                         <Button variant="outline">Back to List</Button>
@@ -77,6 +77,14 @@ export default function EditContactSettings({ auth, settings }: Props) {
                             </CardDescription>
                         </CardHeader>
                         <CardContent className="space-y-6">
+                            <div className="w-full md:w-1/2">
+                                <Label htmlFor="email_label">Label</Label>
+                                <Input
+                                    id="email_label"
+                                    value={data.email_label}
+                                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setData('email_label', e.target.value)}
+                                />
+                            </div>
                             <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
                                 <div className="space-y-4">
                                     <h3 className="font-medium">WhatsApp 1</h3>
@@ -122,44 +130,30 @@ export default function EditContactSettings({ auth, settings }: Props) {
                                 </div>
                             </div>
 
-                            <div className="space-y-4">
-                                <h3 className="font-medium">Email</h3>
-                                <div className="space-y-2">
-                                    <Label htmlFor="email">Email Address</Label>
-                                    <Input
-                                        id="email"
-                                        type="email"
-                                        value={data.email}
-                                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => setData('email', e.target.value)}
-                                        placeholder="contact@example.com"
-                                    />
-                                    {errors.email && <p className="text-sm text-red-600">{errors.email}</p>}
-                                </div>
-                                <div className="space-y-2">
-                                    <Label htmlFor="email_label">Label</Label>
-                                    <Input
-                                        id="email_label"
-                                        value={data.email_label}
-                                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => setData('email_label', e.target.value)}
-                                    />
-                                </div>
+                            <div className="space-y-2">
+                                <Label htmlFor="email">Email Address</Label>
+                                <Input
+                                    id="email"
+                                    type="email"
+                                    value={data.email}
+                                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setData('email', e.target.value)}
+                                    placeholder="contact@example.com"
+                                />
+                                {errors.email && <p className="text-sm text-red-600">{errors.email}</p>}
                             </div>
 
                             <div className="space-y-4">
-                                <h3 className="font-medium">Contact Text</h3>
-                                <div className="space-y-2">
-                                    <Label htmlFor="contact_text">Custom Text</Label>
-                                    <Textarea
-                                        id="contact_text"
-                                        value={data.contact_text}
-                                        onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setData('contact_text', e.target.value)}
-                                        placeholder="Custom text to display on the contact page"
-                                        rows={3}
-                                    />
-                                </div>
+                                <Label htmlFor="contact_text">Custom Text</Label>
+                                <Textarea
+                                    id="contact_text"
+                                    value={data.contact_text}
+                                    onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setData('contact_text', e.target.value)}
+                                    placeholder="Custom text to display on the contact page"
+                                    rows={3}
+                                />
                             </div>
 
-                            <div className="flex justify-between items-center pt-4 border-t">
+                            <div className="flex items-center justify-between pt-4 border-t">
                                 <div className="space-y-1">
                                     <Label htmlFor="is_active">Active</Label>
                                     <p className="text-sm text-gray-500">
