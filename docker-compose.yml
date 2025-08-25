@@ -3,9 +3,20 @@ services:
   laravel:
     build:
       context: .
+      dockerfile: Dockerfile
     container_name: laravel-inertia
     ports:
       - "3003:3003"
     volumes:
       - .:/var/www
-      - ./.env:/var/www/.env
+    environment:
+      APP_ENV: production
+      APP_KEY: ${APP_KEY}
+      APP_DEBUG: "false"
+      APP_URL: ${APP_URL}
+      DB_CONNECTION: mysql
+      DB_HOST: ${DB_HOST}
+      DB_PORT: ${DB_PORT}
+      DB_DATABASE: ${DB_DATABASE}
+      DB_USERNAME: ${DB_USERNAME}
+      DB_PASSWORD: ${DB_PASSWORD}
