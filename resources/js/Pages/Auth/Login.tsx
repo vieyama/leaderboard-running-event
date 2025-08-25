@@ -73,7 +73,7 @@ export default function Login({
                 </div>
 
                 <div className="flex items-center justify-between mt-4">
-                    <label className="flex items-center">
+                    {/* <label className="flex items-center">
                         <Checkbox
                             name="remember"
                             checked={data.remember}
@@ -84,7 +84,7 @@ export default function Login({
                         <span className="text-sm text-gray-600 ms-2">
                             Remember me
                         </span>
-                    </label>
+                    </label> */}
                     {canResetPassword && (
                         <Link
                             href={route('password.request')}

@@ -1,0 +1,11 @@
+version: "3.8"
+services:
+  laravel:
+    build:
+      context: .
+    container_name: laravel-inertia
+    ports:
+      - "3003:3003"
+    volumes:
+      - .:/var/www
+      - ./.env:/var/www/.env
