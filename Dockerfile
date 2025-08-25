@@ -22,14 +22,12 @@ RUN composer install --no-interaction --prefer-dist --optimize-autoloader --no-s
 # Copy the rest of the source code
 COPY . .
 
-# Ensure required Laravel dirs exist
-RUN mkdir -p /var/www/storage /var/www/bootstrap/cache
-
-# Set permissions & run scripts
-RUN chown -R www-data:www-data /var/www/storage /var/www/bootstrap/cache \
+# Ensure Laravel storage & cache dirs exist, set permissions, and optimize autoload
+RUN mkdir -p /var/www/storage /var/www/bootstrap/cache \
+    && chown -R www-data:www-data /var/www/storage /var/www/bootstrap/cache \
     && composer dump-autoload --optimize
 
-# Expose port
+# Expose Laravel port
 EXPOSE 3003
 
 # Run Laravel dev server
