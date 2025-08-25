@@ -13,20 +13,23 @@ COPY --from=composer:2.6 /usr/bin/composer /usr/bin/composer
 
 WORKDIR /var/www
 
-# Copy only composer files first for better layer caching
+# Copy composer files first for cache
 COPY composer.json composer.lock ./
 
-# Install Laravel dependencies
+# Install dependencies without scripts
 RUN composer install --no-interaction --prefer-dist --optimize-autoloader --no-scripts
 
-# Copy all source files
+# Copy the rest of the source code
 COPY . .
 
-# Re-run scripts after full copy (like Laravel post-autoload scripts)
-RUN composer dump-autoload && \
-    chown -R www-data:www-data /var/www/storage /var/www/bootstrap/cache
+# Ensure required Laravel dirs exist
+RUN mkdir -p /var/www/storage /var/www/bootstrap/cache
 
-# Laravel port
+# Set permissions & run scripts
+RUN chown -R www-data:www-data /var/www/storage /var/www/bootstrap/cache \
+    && composer dump-autoload --optimize
+
+# Expose port
 EXPOSE 3003
 
 # Run Laravel dev server
