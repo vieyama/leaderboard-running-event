@@ -40,4 +40,4 @@ RUN chown -R www-data:www-data storage bootstrap/cache \
 # Expose PHP-FPM port
 EXPOSE 3003
 
-CMD ["php-fpm", "-y", "/usr/local/etc/php-fpm.conf", "-R"]
+CMD ["php", "artisan", "serve", "--host=0.0.0.0", "--port=3003"]
