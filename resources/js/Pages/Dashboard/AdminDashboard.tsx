@@ -2,6 +2,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/Com
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head, router, usePage } from '@inertiajs/react';
 import { ModalCreateUpdateEvent } from './Components/ModalCreateUpdateEvent';
+import dayjs from 'dayjs';
 
 export type EventProps = {
     status: boolean;
@@ -56,13 +57,16 @@ export default function AdminDashboard() {
                         <CardContent className='flex flex-wrap gap-8 justify-center'>
 
                             {events?.map((event, key) => {
-                                const imageNumber = (key % 5) + 1;
-                                const inActive = event?.status
+                                const today = dayjs().startOf("day");
+                                const startDate = dayjs(event.start_date).startOf("day");
+                                const endDate = dayjs(event.end_date).endOf("day");
+
+                                const isActive = event.status && today.isAfter(startDate.subtract(1, "day")) && today.isBefore(endDate.add(1, "day"));
 
                                 return (
                                     <div className="relative transition-transform transform hover:scale-105" key={key}>
                                         {/* Ribbon */}
-                                        {!inActive && <div className="absolute -top-1 -right-1 z-10">
+                                        {!isActive && <div className="absolute -top-1 -right-1 z-10">
                                             <div className="relative bg-orange-500 text-white text-sm px-4 py-1 before:absolute before:top-0 before:right-full before:border-orange-500 before:border-t-[12px] before:border-l-[12px] before:border-l-transparent after:absolute after:left-0 after:top-full after:border-r-[12px] after:border-t-[6px] after:border-orange-700 after:border-transparent">
                                                 Not Active
                                             </div>
@@ -87,7 +91,7 @@ export default function AdminDashboard() {
                                                                         const img = e.target as HTMLImageElement;
                                                                         img.parentElement?.classList.add('loaded');
                                                                     }}
-                                                                    />
+                                                                />
                                                             </div>
                                                         </div>
                                                     ) : (

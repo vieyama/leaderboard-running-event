@@ -79,22 +79,21 @@ const FormSchema = z
             .nullable()
             .optional(),
         start_date: z.string().min(1, "Start date is required").superRefine((date, ctx) => {
-            console.log(ctx);
             // Create date objects in local timezone
             const selectedDate = new Date(date);
             const todayAtMidnight = new Date();
             todayAtMidnight.setHours(0, 0, 0, 0);
-            
+
             // Reset time components for comparison
             const selectedDateAtMidnight = new Date(selectedDate);
             selectedDateAtMidnight.setHours(0, 0, 0, 0);
-            
+
             // For existing events, also check it's not before the original start date
             const parentData = (ctx as any).parent;
             if (parentData?.id && parentData?.start_date) {
                 const originalDate = new Date(parentData.start_date);
                 originalDate.setHours(0, 0, 0, 0);
-                
+
                 if (selectedDateAtMidnight < originalDate) {
                     ctx.addIssue({
                         code: z.ZodIssueCode.custom,
@@ -107,16 +106,16 @@ const FormSchema = z
             const selectedDate = new Date(date);
             const todayAtMidnight = new Date();
             todayAtMidnight.setHours(0, 0, 0, 0);
-            
+
             // Reset time components for comparison
             const selectedDateAtMidnight = new Date(selectedDate);
             selectedDateAtMidnight.setHours(0, 0, 0, 0);
-            
+
             // Check if date is more than 1 year from now
             const oneYearFromNow = new Date();
             oneYearFromNow.setFullYear(oneYearFromNow.getFullYear() + 1);
             oneYearFromNow.setHours(0, 0, 0, 0);
-            
+
             if (selectedDateAtMidnight > oneYearFromNow) {
                 ctx.addIssue({
                     code: z.ZodIssueCode.custom,
@@ -163,6 +162,8 @@ export function ModalCreateUpdateEvent(props: ModalCreateUpdateEventProps) {
         onFinish,
     } = props;
     const [open, setOpen] = useState(false);
+    const [imageRemoved, setImageRemoved] = useState(false);
+
     const formatDateForInput = (dateString?: string) => {
         if (!dateString) return "";
         try {
@@ -175,10 +176,13 @@ export function ModalCreateUpdateEvent(props: ModalCreateUpdateEventProps) {
     };
 
     const [previewImage, setPreviewImage] = useState<string | null>(null);
-    const defaultImage = "/images/run-1.svg"; // Default placeholder image
-    
+    const defaultImage = "/images/no-image.png"; // Default placeholder image
+
     // Set minimum date to start_date for existing events, or today for new events
-    const minDate = id && start_date ? formatDateForInput(start_date) : todayString;
+    const minDate =
+        id && start_date && new Date(start_date) < new Date()
+            ? formatDateForInput(start_date)
+            : todayString;
 
     const methods = useForm<z.infer<typeof FormSchema>>({
         resolver: zodResolver(FormSchema),
@@ -195,13 +199,6 @@ export function ModalCreateUpdateEvent(props: ModalCreateUpdateEventProps) {
 
     const { control, handleSubmit, reset, setValue, register } = methods;
 
-    useEffect(() => {
-        // Set preview image if editing and image exists
-        if (id && !previewImage && image_path) {
-            setPreviewImage(`${image_path}`);
-        }
-    }, [id, image_path, previewImage]);
-
     const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (file) {
@@ -214,16 +211,18 @@ export function ModalCreateUpdateEvent(props: ModalCreateUpdateEventProps) {
         }
     };
 
+    useEffect(() => {
+        if (id && !previewImage && image_path && !imageRemoved) {
+            setPreviewImage(`${image_path}`);
+        }
+    }, [id, image_path, previewImage, imageRemoved]);
+
     const removeImage = () => {
+        setImageRemoved(true);
         setValue("image", null);
         setPreviewImage(null);
-        // Reset file input
-        const fileInput = document.getElementById(
-            "image-upload"
-        ) as HTMLInputElement;
-        if (fileInput) {
-            fileInput.value = "";
-        }
+        const fileInput = document.getElementById("image-upload") as HTMLInputElement;
+        if (fileInput) fileInput.value = "";
     };
 
     const onSubmit = async (values: z.infer<typeof FormSchema>) => {

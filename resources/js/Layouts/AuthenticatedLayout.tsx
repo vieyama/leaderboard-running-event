@@ -13,7 +13,6 @@ export default function Authenticated({
     const user = usePage().props.auth.user;
     const [showingNavigationDropdown, setShowingNavigationDropdown] =
         useState(false);
-    console.log(user);
 
     return (
         <div className="min-h-screen bg-gray-100">

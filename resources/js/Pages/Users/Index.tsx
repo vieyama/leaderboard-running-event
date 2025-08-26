@@ -4,6 +4,8 @@ import { PageProps } from '@/types';
 import { Pagination, PaginationContent, PaginationEllipsis, PaginationItem, PaginationLink } from '@/Components/ui/pagination';
 import { ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/Components/ui/select';
+import { Input } from '@/Components/ui/input';
+import React from 'react';
 
 type User = {
     id: number;
@@ -49,10 +51,14 @@ type UsersPageProps = PageProps & {
 const pageSizeOptions = [5, 10, 20, 50];
 
 export default function UsersIndex({ auth, users, page_size = 10, page = 1 }: UsersPageProps) {
+    const [search, setSearch] = React.useState('');
+    const [searchTimeout, setSearchTimeout] = React.useState<NodeJS.Timeout | null>(null);
+
     const handlePageChange = (newPage: number) => {
         router.get(route('users.index'), {
             page: newPage,
             page_size,
+            search,
         }, {
             preserveState: true,
             preserveScroll: true,
@@ -63,10 +69,33 @@ export default function UsersIndex({ auth, users, page_size = 10, page = 1 }: Us
         router.get(route('users.index'), {
             page: 1, // Reset to first page when changing page size
             page_size: newPageSize,
+            search,
         }, {
             preserveState: true,
             preserveScroll: true,
         });
+    };
+
+    const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const value = e.target.value;
+        setSearch(value);
+
+        // Clear previous timeout
+        if (searchTimeout) {
+            clearTimeout(searchTimeout);
+        }
+
+        // Set a new timeout to trigger the search after 500ms of inactivity
+        setSearchTimeout(setTimeout(() => {
+            router.get(route('users.index'), {
+                page: 1,
+                page_size,
+                search: value,
+            }, {
+                preserveState: true,
+                preserveScroll: true,
+            });
+        }, 500));
     };
     return (
         <AuthenticatedLayout
@@ -82,6 +111,17 @@ export default function UsersIndex({ auth, users, page_size = 10, page = 1 }: Us
                 <div className="mx-auto max-w-7xl sm:px-6 lg:px-8">
                     <div className="overflow-hidden bg-white shadow-sm sm:rounded-lg">
                         <div className="p-6 bg-white border-b border-gray-200">
+                            <div className="flex justify-between mb-4">
+                                <div className="w-full max-w-md">
+                                    <Input
+                                        type="text"
+                                        placeholder="Search by name, email, or company..."
+                                        value={search}
+                                        onChange={handleSearch}
+                                        className="w-full"
+                                    />
+                                </div>
+                            </div>
                             <div className="overflow-x-auto">
                                 <table className="min-w-full divide-y divide-gray-200">
                                     <thead className="bg-gray-50">
@@ -183,7 +223,7 @@ export default function UsersIndex({ auth, users, page_size = 10, page = 1 }: Us
                                                     <ChevronLeft className="w-4 h-4" />
                                                 </PaginationLink>
                                             </PaginationItem>
-                                            
+
                                             {/* Show first page */}
                                             {page > 3 && users.last_page > 5 && (
                                                 <PaginationItem>
@@ -196,14 +236,14 @@ export default function UsersIndex({ auth, users, page_size = 10, page = 1 }: Us
                                                     </PaginationLink>
                                                 </PaginationItem>
                                             )}
-                                            
+
                                             {/* Show ellipsis if needed */}
                                             {page > 4 && users.last_page > 5 && (
                                                 <PaginationItem>
                                                     <PaginationEllipsis />
                                                 </PaginationItem>
                                             )}
-                                            
+
                                             {/* Show page numbers */}
                                             {Array.from({ length: Math.min(5, users.last_page) }, (_, i) => {
                                                 let pageNum;
@@ -218,7 +258,7 @@ export default function UsersIndex({ auth, users, page_size = 10, page = 1 }: Us
                                                 }
 
                                                 if (pageNum < 1 || pageNum > users.last_page) return null;
-                                                
+
                                                 // Skip if we're showing first or last page in the main range
                                                 if (pageNum === 1 && page > 3) return null;
                                                 if (pageNum === users.last_page && page < users.last_page - 2) return null;
@@ -235,14 +275,14 @@ export default function UsersIndex({ auth, users, page_size = 10, page = 1 }: Us
                                                     </PaginationItem>
                                                 );
                                             })}
-                                            
+
                                             {/* Show ellipsis if needed */}
                                             {page < users.last_page - 3 && users.last_page > 5 && (
                                                 <PaginationItem>
                                                     <PaginationEllipsis />
                                                 </PaginationItem>
                                             )}
-                                            
+
                                             {/* Show last page if not in main range */}
                                             {page < users.last_page - 2 && users.last_page > 5 && (
                                                 <PaginationItem>
@@ -255,7 +295,7 @@ export default function UsersIndex({ auth, users, page_size = 10, page = 1 }: Us
                                                     </PaginationLink>
                                                 </PaginationItem>
                                             )}
-                                            
+
                                             <PaginationItem>
                                                 <PaginationLink
                                                     className={`cursor-pointer ${page === users.last_page ? 'opacity-50 cursor-not-allowed' : ''}`}
