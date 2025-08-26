@@ -1,5 +1,5 @@
-# Use PHP 8.3 FPM
-FROM php:8.3-fpm
+# Use PHP 8.3 CLI instead of FPM
+FROM php:8.3-cli
 
 # Set working directory
 WORKDIR /var/www
@@ -23,15 +23,15 @@ COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 # Copy Laravel files
 COPY . .
 
-# Install dependencies inside the container
+# Install dependencies
 RUN composer install --no-interaction --optimize-autoloader --no-dev
 
-# Set permissions for Laravel storage
+# Set permissions
 RUN chown -R www-data:www-data storage bootstrap/cache \
     && chmod -R 775 storage bootstrap/cache
 
-# Expose PHP-FPM default port
+# Expose Laravel's built-in server port
 EXPOSE 3003
 
-# Run PHP-FPM
-CMD ["php-fpm"]
+# Start Laravel's built-in development server
+CMD ["php", "artisan", "serve", "--host=0.0.0.0", "--port=3003"]

@@ -5,6 +5,5 @@ services:
     ports:
       - "3003:3003"
     volumes:
-      # Mount only what we need so vendor is kept inside container
       - ./storage:/var/www/storage
       - ./.env:/var/www/.env
