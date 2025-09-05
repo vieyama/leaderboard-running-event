@@ -20,17 +20,12 @@ const FormSchema = z.object({
     date: z.date({ required_error: "Activity date is required." }),
     distance: z.number().positive("Distance must be a positive number"),
     duration: z.string().regex(/^\d{2}:\d{2}:\d{2}$/, 'Please enter a valid duration (HH:MM:SS)'),
-    pace: z.string().regex(/^\d{2}:\d{2}$/, 'Please enter a valid pace (e.g., 03:50)')
+    pace: z.string()
 });
 
 const convertTimeToSeconds = (time: string) => {
     const [hours, minutes, seconds] = time.split(':').map(Number);
     return hours * 3600 + minutes * 60 + seconds;
-};
-
-const convertPaceToSeconds = (pace: string) => {
-    const [minutes, seconds] = pace.split(':').map(Number);
-    return minutes * 60 + seconds;
 };
 
 interface ModalActivityProps {
@@ -60,20 +55,20 @@ export const ModalActivity = ({ eventRegisterId, disabled = false }: ModalActivi
     useEffect(() => {
         if (watchDistance > 0 && watchDuration) {
             const [hours, minutes, seconds] = watchDuration.split(':').map(Number);
+            //pace = waktu / jarak
             const totalSeconds = hours * 3600 + minutes * 60 + seconds;
             const paceInSeconds = totalSeconds / watchDistance;
             
             const paceMinutes = Math.floor(paceInSeconds / 60);
             const paceSeconds = Math.round(paceInSeconds % 60);
             
-            const formattedPace = `${String(paceMinutes).padStart(2, '0')}:${String(paceSeconds).padStart(2, '0')}`;
-            form.setValue('pace', formattedPace, { shouldValidate: true });
+            form.setValue('pace', `${paceMinutes}:${paceSeconds.toString().padStart(2, '0')} min/km`, { shouldValidate: true });
         }
     }, [watchDistance, watchDuration, form]);
 
     function onSubmit(data: z.infer<typeof FormSchema>) {
         const durationInSeconds = convertTimeToSeconds(data.duration);
-        const paceInSeconds = convertPaceToSeconds(data.pace);
+        const paceInSeconds = durationInSeconds / watchDistance;
 
         router.post("/activity/create", {
             ...data,
@@ -215,8 +210,6 @@ export const ModalActivity = ({ eventRegisterId, disabled = false }: ModalActivi
                                     <FormLabel>Pace (min/km)</FormLabel>
                                     <FormControl>
                                         <Input
-                                            type="time"
-                                            step="1"
                                             placeholder="16:49"
                                             onChange={e => field.onChange(e.target.value)}
                                             value={field.value}

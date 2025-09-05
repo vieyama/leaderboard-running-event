@@ -10,6 +10,7 @@ import { useState } from 'react';
 import { Inbox } from 'lucide-react';
 import { EmptyTable } from '@/Components/ui/empty-table';
 import { Input } from '@/Components/ui/input';
+import { calculateTotalPace, formatDuration } from '@/utils/calculateTotalPace';
 
 export interface FakeUsersProps {
     success: boolean;
@@ -70,20 +71,6 @@ export default function Welcome() {
         }
         setGender(selectedGender)
         form.reset()
-    }
-
-    function formatDuration(seconds: number) {
-        const hours = Math.floor(seconds / 3600);
-        const minutes = Math.floor((seconds % 3600) / 60);
-        const remainingSeconds = seconds % 60;
-
-        return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}`;
-    }
-
-    function formatPace(seconds: number) {
-        const minutes = Math.floor(seconds / 60);
-        const remainingSeconds = seconds % 60;
-        return `${minutes}:${remainingSeconds.toString().padStart(2, '0')} /km`;
     }
 
     return (
@@ -191,7 +178,7 @@ export default function Welcome() {
                                                         <TableCell className='capitalize'>{leaderboard?.user?.gender}</TableCell>
                                                         <TableCell className="text-right">{parseInt(leaderboard?.total_distance, 10)} KM</TableCell>
                                                         <TableCell className="text-right">{formatDuration(leaderboard?.total_duration)}</TableCell>
-                                                        <TableCell className="text-right">{formatPace(leaderboard?.total_pace)}</TableCell>
+                                                        <TableCell className="text-right">{calculateTotalPace(Number(leaderboard?.total_distance || 0), formatDuration(leaderboard?.total_duration))}</TableCell>
                                                     </TableRow>
                                                 )) : <EmptyTable
                                                     colSpan={6}

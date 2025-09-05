@@ -23,4 +23,4 @@ yarn-error.log
 /.zed
 
 .vemto_settings
-.DS_Store
+/.DS_Store

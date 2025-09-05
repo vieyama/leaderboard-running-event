@@ -5,6 +5,7 @@ import { Timer, Medal, Activity, ExternalLink, ArrowLeft } from 'lucide-react';
 import { ScrollArea } from '@/Components/ui/scroll-area';
 import { ModalDeleteActivity } from './Components/ModalDeleteActivity';
 import { ModalActivity } from './Components/ModalActivity';
+import { calculateTotalPace, formatDuration } from '@/utils/calculateTotalPace';
 
 export type ActivityProps = { id: number, date: string, activity_name: string, strava_url: string, created_at: string, distance: number, duration: number, pace: number }
 export type EventRegisterProps = { bib: string, id: number, total_distance: string, total_duration: number, total_pace: number, gender: string, activity: ActivityProps[], user: { name: string, email: string } }
@@ -23,18 +24,10 @@ export default function Dashboard() {
         return now >= startDate && now <= endDate;
     }
 
-    function formatDuration(seconds: number) {
-        const hours = Math.floor(seconds / 3600);
-        const minutes = Math.floor((seconds % 3600) / 60);
-        const remainingSeconds = seconds % 60;
-
-        return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}`;
-    }
-
     function formatPace(seconds: number) {
         const minutes = Math.floor(seconds / 60);
         const remainingSeconds = seconds % 60;
-        return `${minutes}:${remainingSeconds.toString().padStart(2, '0')} /km`;
+        return `${minutes}:${remainingSeconds.toString().padStart(2, '0')} min/km`;
     }
 
     function formatDate(dateString: string) {
@@ -44,6 +37,7 @@ export default function Dashboard() {
             day: 'numeric'
         });
     }
+    console.log(eventRegister);
 
     return (
         <AuthenticatedLayout
@@ -113,7 +107,7 @@ export default function Dashboard() {
                                                         </div>
                                                         <div>
                                                             <p className="text-sm text-muted-foreground">Total Pace</p>
-                                                            <p className="font-semibold">{formatPace(eventRegister.total_pace)}</p>
+                                                            <p className="font-semibold">{calculateTotalPace((Number(eventRegister.total_distance) ?? 0), formatDuration(eventRegister.total_duration))}</p>
                                                         </div>
                                                     </div>
                                                 </CardContent>

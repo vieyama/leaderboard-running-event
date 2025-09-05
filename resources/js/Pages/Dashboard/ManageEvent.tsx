@@ -5,6 +5,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { ModalCreateUpdateEvent } from './Components/ModalCreateUpdateEvent';
 import { ModalDeleteEvent } from './Components/ModalDeleteEvent';
 import { ArrowLeft } from 'lucide-react';
+import { calculateTotalPace, formatDuration } from '@/utils/calculateTotalPace';
 
 
 export type ActivityProps = { activity_name: string, strava_url: string, created_at: string, distance: number, duration: number, pace: number }
@@ -22,7 +23,7 @@ export default function Dashboard() {
         <AuthenticatedLayout
             header={
                 <div className="flex items-center space-x-4">
-                    <button 
+                    <button
                         onClick={() => router.visit('/admin-dashboard')}
                         className="p-1 rounded-full transition-colors hover:bg-gray-100"
                         title="Go back"
@@ -47,7 +48,7 @@ export default function Dashboard() {
                             </div>
                             <div className='flex gap-3 items-center'>
                                 <ModalDeleteEvent {...event} />
-                                <ModalCreateUpdateEvent 
+                                <ModalCreateUpdateEvent
                                     id={event.id}
                                     event_name={event.event_name}
                                     description={event.description}
@@ -55,7 +56,7 @@ export default function Dashboard() {
                                     start_date={event.start_date}
                                     end_date={event.end_date}
                                     image_path={event.image_path}
-                                    onFinish={onFinish} 
+                                    onFinish={onFinish}
                                 />
                             </div>
                         </CardHeader>
@@ -74,14 +75,14 @@ export default function Dashboard() {
                                         </TableRow>
                                     </TableHeader>
                                     <TableBody>
-                                        {eventRegisters?.data?.map((leaderboard: any) => (
+                                        {eventRegisters?.data?.map((leaderboard: { id: string; bib: string; user: { name: string; gender: string; }; total_distance: string; total_duration: number; total_pace: number; event_id: string; user_id: string; }) => (
                                             <TableRow key={leaderboard?.id}>
                                                 <TableCell className="font-medium">{leaderboard?.bib}</TableCell>
                                                 <TableCell className="font-medium">{leaderboard?.user?.name}</TableCell>
                                                 <TableCell className='capitalize'>{leaderboard?.user?.gender}</TableCell>
                                                 <TableCell className="text-right">{parseInt(leaderboard?.total_distance, 10)} KM</TableCell>
-                                                <TableCell className="text-right">{leaderboard?.total_duration}</TableCell>
-                                                <TableCell className="text-right">{leaderboard?.total_pace}</TableCell>
+                                                <TableCell className="text-right">{formatDuration(leaderboard?.total_duration)}</TableCell>
+                                                <TableCell className="text-right">{calculateTotalPace(Number(leaderboard?.total_distance || 0), formatDuration(leaderboard?.total_duration))}</TableCell>
                                                 <TableCell><Link href={`/event/${leaderboard?.event_id}/user/${leaderboard?.user_id}`}>Detail</Link></TableCell>
                                             </TableRow>
                                         ))}

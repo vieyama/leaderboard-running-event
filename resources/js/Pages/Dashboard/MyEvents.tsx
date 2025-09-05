@@ -27,14 +27,14 @@ interface PagePropsWithAuth extends PageProps<{
         user: User;
     };
     events: Event[];
-}> {}
+}> { }
 
 export default function MyEvents({ auth, events }: PagePropsWithAuth) {
     return (
         <AuthenticatedLayout
             header={
                 <div className="flex items-center space-x-4">
-                    <button 
+                    <button
                         onClick={() => router.visit('/dashboard')}
                         className="p-1 rounded-full transition-colors hover:bg-gray-100"
                         title="Go back"
@@ -54,11 +54,18 @@ export default function MyEvents({ auth, events }: PagePropsWithAuth) {
                         {events.length > 0 ? (
                             events.map((event) => (
                                 <Card key={event.id} className="overflow-hidden transition-shadow hover:shadow-lg">
-                                    <div className="overflow-hidden relative h-48">
+                                    <div className="overflow-hidden relative h-80">
                                         {event.image_path ? (
                                             <img
                                                 src={event.image_path.startsWith('http') ? event.image_path : `/storage/${event.image_path}`}
                                                 alt={event.event_name}
+                                                onError={(
+                                                    e
+                                                ) => {
+                                                    // If image fails to load, show default placeholder
+                                                    const target = e.target as HTMLImageElement;
+                                                    target.src = "/images/no-image.png";
+                                                }}
                                                 className="object-cover w-full h-full"
                                             />
                                         ) : (
